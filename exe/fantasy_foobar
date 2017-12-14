@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+
+require 'fantasy_foobar'
+require 'paint'
+require 'json'
+require 'net/http'
+
+FILE_PATH = File.expand_path(File.dirname(__FILE__)).split('/exe')[0]
+
+file = File.read "#{FILE_PATH}/lib/fantasy_foobar/data/teams.json"
+TEAMS = JSON.parse(file)
+
+CURRENT_TEAM = if File.exist?("#{FILE_PATH}/lib/fantasy_foobar/data/current_team.json")
+  JSON.parse(File.read("#{FILE_PATH}/lib/fantasy_foobar/data/current_team.json"))
+else
+  []
+end
+
+current_games = {}
+url = 'http://www.nfl.com/liveupdate/scorestrip/ss.xml'
+test_url = 'http://www.nfl.com/ajax/scorestrip?season=2017&seasonType=REG&week=11'
+
+req = Net::HTTP.get_response(URI.parse(url)).body
+doc = Nokogiri::XML(req)
+
+doc.xpath('//g').each do |x|
+  eid = x.attribute('eid').value
+  current_games[x.attribute('h').value.to_s] = { 'eid' => eid, 'location' => 'home' }
+  current_games[x.attribute('v').value.to_s] = { 'eid' => eid, 'location' => 'away' }
+end
+
+File.write("#{FILE_PATH}/lib/fantasy_foobar/data/current_games.json", current_games.to_json)
+CURRENT_GAMES = current_games.to_json
+
+fantasy_foobar = FantasyFoobar::Team.new
+fantasy_foobar.start_app
