@@ -35,6 +35,11 @@ long as you leave the script running.
 * Allow for a cleaner way to quit rather than needing to use `Ctrl + C`
 * (many more ideas in the pipeline, but feel free to suggest)
 
+## Special thanks 
+
+Thanks to [thetizzo](https://github.com/thetizzo) for his [nfl_data](https://github.com/thetizzo/nfl_data)
+gem that was slightly tinkered with to grab all current NFL players.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at
